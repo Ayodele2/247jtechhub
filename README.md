@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 247 VTU Platform
+
+**A Nigerian virtual top-up platform by 247 Jtech Hub.**
+
+247 VTU Platform is a web application in development for purchasing airtime and mobile data, funding a wallet, and accessing additional digital utility services.
+
+## Current Status
+
+**Phase:** Frontend foundation
+
+The current version includes a responsive landing page and a preliminary service catalogue. Payment processing, user accounts, wallet transactions, and provider integrations have not yet been implemented.
+
+## Planned Features
+
+- User registration and secure authentication
+- Wallet funding and transaction history
+- Airtime and data purchases
+- Electricity bill payments
+- WAEC and JAMB services, subject to provider and product verification
+- Paystack payment integration
+- VTpass service fulfillment
+- Administrative dashboard
+- Transaction monitoring and failure handling
+
+## Planned Technology Stack
+
+- **Frontend:** Next.js, React, TypeScript, Tailwind CSS
+- **UI:** shadcn/ui
+- **Backend:** NestJS REST API
+- **Database:** PostgreSQL
+- **ORM:** Drizzle ORM
+- **Validation:** Zod
+- **Payments:** Paystack test mode
+- **Service fulfillment:** VTpass sandbox, subject to availability
+- **Testing:** Jest, Supertest, Playwright
+- **Version control:** Git and GitHub
+
+Additional infrastructure, including Redis and BullMQ, will be introduced if justified by the transaction-processing requirements.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js
+- npm
+- Git
+
+### Run the frontend
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Verify the project
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
-## Learn More
+## Financial and Security Principles
 
-To learn more about Next.js, take a look at the following resources:
+- Store monetary amounts as integer kobo.
+- Verify payment notifications and transactions on the server.
+- Maintain an auditable wallet ledger.
+- Use database transactions and idempotency controls for financial operations.
+- Never treat a payment redirect as proof of successful payment.
+- Handle uncertain service-provider outcomes without blindly retrying purchases or charging users twice.
+- Keep credentials and API secrets out of source control.
+- Test integrations in sandbox or test environments before considering production use.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Development Approach
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The project is being built incrementally. Each milestone should be implemented, tested, documented, and committed before moving to the next.
 
-## Deploy on Vercel
+No live payment or VTU transaction should be assumed operational until its integration and verification tests have been completed.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Repository
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[247jtechhub on GitHub](https://github.com/Ayodele2/247jtechhub)
