@@ -1,4 +1,3 @@
-
 import {
   pgTable,
   uuid,
@@ -10,6 +9,8 @@ export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   fullName: varchar('full_name', { length: 150 }).notNull(),
+  phoneNumber: varchar('phone_number', { length: 20 }).unique(),
+  passwordHash: varchar('password_hash', { length: 255 }).notNull(),
   createdAt: timestamp('created_at', {
     withTimezone: true,
   })

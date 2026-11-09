@@ -8,6 +8,41 @@
       "when": 1793264206824,
       "tag": "0000_watery_hairball",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793288978275,
+      "tag": "0001_charming_epoch",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793348526841,
+      "tag": "0002_nosy_warpath",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793550745664,
+      "tag": "0003_steep_iron_monger",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794117006642,
+      "tag": "0004_add_vtu_purchases",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794152064888,
+      "tag": "0005_add_user_phone_number",
+      "breakpoints": true
     }
   ]
 }

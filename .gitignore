@@ -2,30 +2,26 @@
 node_modules/
 **/node_modules/
 
-# Next.js build output
-.next/
-**/.next/
-
 # Environment variables and secrets
 .env
 .env.*
 !.env.example
 
-# Build output
-dist/
-build/# Dependencies
-node_modules/
-**/node_modules/
-
-# Next.js build output
+# Framework and build output
 .next/
 **/.next/
-
-# Environment variables and secrets
-.env
-.env.*
-!.env.example
-
-# Build output
+.expo/
+**/.expo/
 dist/
+**/dist/
 build/
+**/build/
+coverage/
+**/coverage/
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
