@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "247 Jtech Hub",
+    "slug": "247-jtech-hub",
+    "version": "1.0.0",
+    "scheme": "247jtechhub",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.247jtechhub.app"
+    },
+    "android": {
+      "package": "com.247jtechhub.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#741B2B",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-asset",
+      "expo-secure-store"
+    ]
+  }
+}
