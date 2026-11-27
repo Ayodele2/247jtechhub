@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsPositive,
   IsString,
+  Length,
   Matches,
   Max,
 } from 'class-validator';
@@ -19,9 +20,14 @@ export class PurchaseAirtimeDto {
   })
   phoneNumber!: string;
 
+  // Amount is in Naira, not kobo.
   @IsNumber()
   @IsInt()
   @IsPositive()
   @Max(1000000)
   amount!: number;
+
+  @IsString()
+  @Length(8, 100)
+  idempotencyKey!: string;
 }

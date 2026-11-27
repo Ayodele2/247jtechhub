@@ -43,6 +43,13 @@
       "when": 1794152064888,
       "tag": "0005_add_user_phone_number",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795609080286,
+      "tag": "0006_add_email_verification",
+      "breakpoints": true
     }
   ]
 }

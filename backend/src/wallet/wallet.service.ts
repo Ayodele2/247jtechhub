@@ -64,6 +64,7 @@ export class WalletService {
       .orderBy(desc(walletTransactions.createdAt));
   }
 
+ 
   // Initialize wallet funding through Paystack.
   async initializeFunding(
     userId: string,
@@ -99,30 +100,17 @@ export class WalletService {
       })
       .returning();
 
+    let payment;
+
     try {
-      const payment = await this.paystackService.initializeTransaction({
+      payment = await this.paystackService.initializeTransaction({
         email,
         amountKobo,
         reference,
-        callbackUrl: `${
-          process.env.FRONTEND_URL ?? 'http://localhost:3000'
-        }/wallet/fund/callback`,
+        callbackUrl:
+          process.env.MOBILE_CALLBACK_URL ??
+          '247jtechhub://wallet/fund/callback',
       });
-
-      return {
-        message: 'Wallet funding initialized successfully.',
-        funding: {
-          id: funding.id,
-          reference: funding.reference,
-          amountKobo: funding.amountKobo,
-          status: funding.status,
-        },
-        payment: {
-          authorizationUrl: payment.authorization_url,
-          accessCode: payment.access_code,
-          reference: payment.reference,
-        },
-      };
     } catch (error) {
       await this.db
         .update(walletFundings)
@@ -134,7 +122,38 @@ export class WalletService {
 
       throw error;
     }
+
+    if (payment.reference !== reference) {
+      throw new BadRequestException(
+        'Paystack returned an unexpected transaction reference.',
+      );
+    }
+
+    // Save the reference returned by Paystack.
+    await this.db
+      .update(walletFundings)
+      .set({
+        paystackReference: payment.reference,
+        updatedAt: new Date(),
+      })
+      .where(eq(walletFundings.id, funding.id));
+
+    return {
+      message: 'Wallet funding initialized successfully.',
+      funding: {
+        id: funding.id,
+        reference: funding.reference,
+        amountKobo: funding.amountKobo,
+        status: funding.status,
+      },
+      payment: {
+        authorizationUrl: payment.authorization_url,
+        accessCode: payment.access_code,
+        reference: payment.reference,
+      },
+    };
   }
+
 
   // Verify Paystack payment and credit the wallet exactly once.
   async verifyFunding(userId: string, reference: string) {
@@ -267,4 +286,43 @@ export class WalletService {
       };
     });
   }
+
+  // Process a verified Paystack webhook using the existing wallet funding logic.
+  async processPaystackWebhook(reference: string) {
+    if (!reference) {
+      throw new BadRequestException(
+        'Payment reference is required.',
+      );
+    }
+
+    const [funding] = await this.db
+      .select()
+      .from(walletFundings)
+      .where(eq(walletFundings.reference, reference))
+      .limit(1);
+
+    if (!funding) {
+      throw new NotFoundException(
+        'Funding transaction not found.',
+      );
+    }
+
+    if (funding.status === 'successful') {
+      return {
+        message: 'This funding transaction has already been credited.',
+        status: 'successful',
+        reference,
+      };
+    }
+
+    if (funding.status !== 'pending') {
+      throw new BadRequestException(
+        'This funding transaction cannot be processed.',
+      );
+    }
+
+    // Reuse existing Paystack verification and atomic wallet crediting.
+    return this.verifyFunding(funding.userId, reference);
+  }
+
 }

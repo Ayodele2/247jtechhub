@@ -2,6 +2,7 @@
 import {
   IsIn,
   IsString,
+  Length,
   Matches,
 } from 'class-validator';
 
@@ -16,5 +17,10 @@ export class PurchaseDataDto {
   phoneNumber!: string;
 
   @IsString()
+  @Length(1, 100)
   bundleCode!: string;
+
+  @IsString()
+  @Length(8, 100)
+  idempotencyKey!: string;
 }

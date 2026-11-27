@@ -1,15 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
+
 import { VtuController } from './vtu.controller';
+import { VtuService } from './vtu.service';
 
 describe('VtuController', () => {
   let controller: VtuController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [VtuController],
-    }).compile();
+  const vtuServiceMock = {
+    purchaseAirtime: jest.fn(),
+    purchaseData: jest.fn(),
+  };
 
-    controller = module.get<VtuController>(VtuController);
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    controller = new VtuController(
+      vtuServiceMock as unknown as VtuService,
+    );
   });
 
   it('should be defined', () => {

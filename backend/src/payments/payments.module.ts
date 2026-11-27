@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
 
+import { Module } from '@nestjs/common';
 import { PaystackService } from './paystack.service';
 import { PaybetaService } from './paybeta.service';
 

@@ -1,0 +1,350 @@
+Continue building the 247 Jtech Hub VTU Platform from the existing project.
+
+**Project location:** `C:\Users\HomePC\Desktop\247jt`
+
+**Architecture:**
+- Frontend: Next.js
+- Mobile: React Native with Expo Router
+- Backend: NestJS
+- Database: PostgreSQL with Drizzle ORM
+- Payment gateway: Paystack
+
+**Current milestone:** Paystack wallet funding and payment verification.
+
+The backend has wallet funding initialization and verification endpoints. The mobile wallet screen integrates Paystack Checkout using `expo-web-browser`.
+
+**Current test status:**
+- Paystack Test Mode opens successfully.
+- Paystack displays the test checkout and sends an email receipt.
+- Wallet balance has not increased.
+- No transaction appears in wallet history.
+- Payment verification and wallet crediting are not yet confirmed.
+
+**Next task:**
+Diagnose the existing test transaction. Inspect backend logs, determine whether the mobile callback fires, verify whether `/api/v1/wallet/fund/verify` is called, and identify why the wallet is not credited.
+
+Do not initiate another payment, expose secrets, overwrite existing files, reset Git history, or push to GitHub without permission.
+
+Work step by step. Explain each change, provide exact Windows PowerShell commands, request verification before proceeding, and provide a new handover prompt after every completed milestone.
+
+
+
+# PROJECT HANDOVER — 247 JTECH HUB / 247 VTU PLATFORM
+
+You are continuing an existing software engineering project called **247 Jtech Hub**, a Nigerian VTU web application for airtime and data purchases.
+
+Your responsibility is to continue development from the existing codebase without unnecessarily rebuilding, replacing or breaking completed work.
+
+## 1. Project overview
+
+The platform is intended to support:
+
+- User registration and authentication.
+- Email/phone OTP verification.
+- Google authentication.
+- Apple authentication.
+- Customer wallet and funding.
+- Airtime purchases.
+- Data bundle purchases.
+- Automated VTU transactions.
+- Payment gateway integration.
+- Transaction history.
+- Refund and failed-transaction handling.
+- Future administrative management.
+
+## 2. Project architecture
+
+The project is organized into:
+
+```text
+247jt/
+├── frontend/
+├── backend/
+└── mobile/
+```
+
+### Frontend
+- Next.js 16.4.2
+- React 19.3
+- TypeScript
+- Tailwind CSS 4
+
+### Backend
+- NestJS 12
+- TypeScript
+- PostgreSQL 18.6
+- Drizzle ORM
+- JWT authentication
+- Paystack integration
+
+### Mobile
+- Expo
+- React Native
+- Expo Router
+
+The canonical Windows project directory is:
+
+```text
+C:\Users\HomePC\Desktop\247jt
+```
+
+The backend directory is:
+
+```text
+C:\Users\HomePC\Desktop\247jt\backend
+```
+
+Do not switch to or modify `247jt-consolidated`.
+
+## 3. Completed backend work
+
+### Backend foundation
+- NestJS application initialized.
+- PostgreSQL database configured.
+- Drizzle ORM configured.
+- Health endpoint registered:
+
+```text
+GET /api/v1/health
+```
+
+### Authentication foundation
+- Registration endpoint.
+- Login endpoint.
+- Current-user endpoint.
+- JWT authentication foundation.
+
+OTP verification, Google login and Apple login are NOT completed.
+
+### Wallet functionality
+Existing wallet endpoints include:
+
+```text
+GET  /api/v1/wallet
+GET  /api/v1/wallet/transactions
+POST /api/v1/wallet/fund/initialize
+POST /api/v1/wallet/fund/verify
+```
+
+Wallet functionality includes:
+- Retrieving wallet balance.
+- Retrieving transaction history.
+- Initializing Paystack funding.
+- Verifying Paystack payments.
+- Recording pending and successful funding.
+- Crediting wallet balances.
+- Recording wallet ledger transactions.
+
+### Payment integration
+Paystack TEST MODE has been integrated.
+
+The existing funding verification process:
+1. Finds the funding record belonging to the authenticated user.
+2. Checks whether it has already succeeded.
+3. Requires pending status.
+4. Verifies the transaction with Paystack.
+5. Checks payment status, currency, reference and amount.
+6. Uses a PostgreSQL transaction and row locking.
+7. Rechecks funding status.
+8. Atomically updates the wallet balance.
+9. Creates a wallet credit transaction.
+10. Marks the funding record successful.
+
+This implementation is designed to prevent duplicate credits.
+
+### Paystack webhook
+
+Endpoint:
+
+```text
+POST /api/v1/payments/paystack/webhook
+```
+
+Implementation includes:
+- Raw request body support.
+- HMAC SHA512 signature verification.
+- Timing-safe signature comparison.
+- Invalid signature rejection.
+- Handling of `charge.success`.
+- Ignoring unrelated events.
+- Payment reference validation.
+- Independent Paystack transaction verification.
+- Reuse of existing wallet funding logic.
+- Database-level duplicate-credit protection.
+
+The webhook controller is registered through `WalletModule`, which imports `PaymentsModule`.
+
+The webhook wallet processing method is:
+
+```text
+processPaystackWebhook(reference)
+```
+
+It finds the funding record and calls the existing `verifyFunding()` method.
+
+### Local webhook tests completed
+
+- Invalid signature returned HTTP 401.
+- Valid signature for `transfer.success` was accepted.
+- Unrelated event returned:
+
+```json
+{
+  "message": "Webhook event ignored."
+}
+```
+
+A real successful `charge.success` webhook-to-wallet test is still outstanding.
+
+## 4. Latest test and build results
+
+Most recent backend test result:
+
+```text
+Test Suites: 6 passed, 6 total
+Tests:       28 passed, 28 total
+Snapshots:   0 total
+```
+
+Most recent build:
+
+```text
+npm run build
+nest build
+```
+
+Successful.
+
+Backend development server successfully registered:
+
+```text
+POST /api/v1/payments/paystack/webhook
+```
+
+## 5. Immediate development priority
+
+**Resume wallet development.**
+
+Do not jump to unrelated features yet.
+
+First inspect the existing wallet files and tests. In particular, determine whether `wallet.service.spec.ts` exists.
+
+Suggested inspection commands:
+
+```powershell
+Get-ChildItem src\wallet
+Get-ChildItem src -Recurse -Filter "*wallet*.spec.ts"
+```
+
+Then proceed step by step.
+
+Recommended wallet milestones:
+
+1. Test wallet funding and webhook processing thoroughly.
+2. Test duplicate webhook events and duplicate funding verification.
+3. Test wallet balance and transaction history.
+4. Review wallet authorization and user isolation.
+5. Connect the wallet frontend to the backend.
+6. Implement wallet funding UI and payment callback handling.
+7. Test successful, failed, pending and interrupted payments.
+8. Complete reconciliation and refund handling.
+
+Never initiate a payment or modify a customer's balance without explicit approval.
+
+## 6. Outstanding features — do not forget these
+
+The following are still incomplete and must remain on the project roadmap.
+
+### Authentication
+- Email OTP verification.
+- Phone OTP verification, if selected.
+- Resend OTP.
+- OTP expiry and attempt limits.
+- Google authentication.
+- Apple authentication.
+- Secure account linking and duplicate-account handling.
+
+### Airtime
+Airtime buying is NOT completed.
+
+We still need:
+- Network/provider selection.
+- Phone number validation.
+- Amount selection.
+- Transaction confirmation.
+- Wallet debit.
+- VTU provider API integration.
+- Transaction status handling.
+- Duplicate purchase prevention.
+- Failed transaction refund/reversal.
+- Purchase history.
+
+### Data
+Data buying is NOT completed.
+
+We still need:
+- Network selection.
+- Bundle retrieval.
+- Bundle pricing.
+- Phone number validation.
+- Purchase confirmation.
+- Wallet debit.
+- VTU provider integration.
+- Success/failure/pending handling.
+- Refund and reconciliation.
+
+### Other pending work
+- Frontend wallet integration.
+- Complete frontend/backend authentication integration.
+- Admin dashboard and administrative permissions.
+- Production security review.
+- Rate limiting.
+- Monitoring and backups.
+- Production deployment.
+- Legal and regulatory review before commercial launch.
+
+## 7. Collaboration instructions
+
+The user prefers collaborative, milestone-based development.
+
+Follow these rules:
+
+1. Explain each step in beginner-friendly language.
+2. Give exact Windows PowerShell commands.
+3. Work on one step at a time.
+4. Explain why a change is necessary.
+5. Give complete file contents when replacing a file.
+6. Wait for the user's terminal output before moving to the next step.
+7. Run tests after meaningful changes.
+8. Run the production build before closing a milestone.
+9. Document completed milestones and important architectural decisions.
+10. Maintain a clear list of outstanding work.
+11. Do not assume a feature is complete merely because its backend foundation exists.
+
+Security rules:
+- Never ask the user to paste API keys, Paystack secrets, passwords, JWTs or `.env` contents.
+- Do not expose secrets in frontend code.
+- Never use `git add .`; stage specific files only.
+- Never run `npm audit fix --force`.
+- Never reset, overwrite or rebase existing Git work without explicit permission.
+- Do not push to GitHub without explicit permission.
+- Do not make real payments or purchases without explicit approval.
+- Do not delete project folders.
+- Preserve existing code and inspect before modifying it.
+
+## 8. How to begin
+
+Start by acknowledging the existing project state.
+
+Then ask the user to run:
+
+```powershell
+Get-ChildItem src\wallet
+Get-ChildItem src -Recurse -Filter "*wallet*.spec.ts"
+```
+
+Continue with the wallet milestone based on the actual results.
+
+Do not restart the project from scratch. Do not jump to OTP, Google or Apple authentication before the wallet milestone is addressed.
+
+**Primary objective: Finish a reliable wallet system, then proceed to airtime and data purchases, authentication improvements and the remaining production requirements.**

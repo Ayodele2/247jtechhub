@@ -16,7 +16,9 @@ The current version includes a responsive landing page and a preliminary service
 - Wallet funding and transaction history
 - Airtime and data purchases
 - Electricity bill payments
-- WAEC and JAMB services, subject to provider and product verification
+- Cable TV subscriptions (DStv, GOtv, and StarTimes)
+- WAEC and NECO result-checking PIN purchases, subject to provider and product verification
+- JAMB services, subject to provider and product verification
 - Paystack payment integration
 - VTpass service fulfillment
 - Administrative dashboard

@@ -1,9 +1,11 @@
+
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { EmailService } from './email.service';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
@@ -14,7 +16,9 @@ import { JwtStrategy } from './jwt.strategy';
         const secret = process.env.JWT_SECRET;
 
         if (!secret) {
-          throw new Error('JWT_SECRET is missing from environment variables.');
+          throw new Error(
+            'JWT_SECRET is missing from environment variables.',
+          );
         }
 
         return {
@@ -27,6 +31,10 @@ import { JwtStrategy } from './jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [
+    AuthService,
+    EmailService,
+    JwtStrategy,
+  ],
 })
 export class AuthModule {}

@@ -1,4 +1,6 @@
 
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
 import {
   BadGatewayException,
   Injectable,
@@ -38,6 +40,38 @@ export class PaystackService {
   private readonly secretKey =
     process.env.PAYSTACK_SECRET_KEY;
 
+  // Verify Paystack webhook signatures using HMAC SHA512.
+  verifyWebhookSignature(
+    rawBody: Buffer,
+    signature: string,
+  ): boolean {
+    if (
+      !this.secretKey ||
+      typeof signature !== 'string' ||
+      !/^[a-f0-9]{128}$/i.test(signature) ||
+      !Buffer.isBuffer(rawBody)
+    ) {
+      return false;
+    }
+
+    const expectedSignature = createHmac(
+      'sha512',
+      this.secretKey,
+    )
+      .update(rawBody)
+      .digest();
+
+    const receivedSignature = Buffer.from(
+      signature,
+      'hex',
+    );
+
+    return (
+      receivedSignature.length === expectedSignature.length &&
+      timingSafeEqual(receivedSignature, expectedSignature)
+    );
+  }
+
   private getHeaders() {
     if (!this.secretKey) {
       throw new InternalServerErrorException(
@@ -51,6 +85,7 @@ export class PaystackService {
     };
   }
 
+  // Initialize a Paystack payment transaction.
   async initializeTransaction(params: {
     email: string;
     amountKobo: number;
@@ -92,6 +127,7 @@ export class PaystackService {
     return result.data;
   }
 
+  // Verify a Paystack transaction directly with Paystack.
   async verifyTransaction(reference: string) {
     const response = await fetch(
       `${this.baseUrl}/transaction/verify/${encodeURIComponent(reference)}`,
